@@ -1,15 +1,23 @@
+/* frontend/gameinfo/src/index.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* :root { ... } 이 부분은 Vite 초기 설정일 수 있으며, 
+   Tailwind와 다크모드 설정이 이미 되어 있으므로,
+   만약 여기서 정의된 font-family, line-height, color, background-color 등이
+   Tailwind 설정과 충돌하거나 의도치 않은 결과를 만든다면 선택적으로 제거하거나 수정할 수 있습니다.
+   하지만 지금 당장 중앙 정렬 문제와 직접적인 관련은 없을 수 있습니다.
+*/
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* color: rgba(255, 255, 255, 0.87); */ /* Tailwind dark 모드에서 제어 */
+  /* background-color: #242424; */ /* Tailwind dark 모드에서 제어 */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -28,8 +36,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex; */       /* 이 부분을 주석 처리하거나 삭제해주세요 */
+  /* place-items: center; */ /* 이 부분을 주석 처리하거나 삭제해주세요 */
   min-width: 320px;
   min-height: 100vh;
 }
@@ -46,7 +54,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  /* background-color: #1a1a1a; */ /* Tailwind dark 모드에서 제어 */
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -58,23 +66,29 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* @media (prefers-color-scheme: light) { ... } 이 부분도 Tailwind의 다크모드 ('class' 전략)와
+   JavaScript를 사용한 테마 전환 로직이 있으므로,
+   Tailwind의 스타일이 우선 적용될 가능성이 높습니다.
+   만약 prefers-color-scheme 미디어 쿼리에 의한 스타일이 의도치 않게 적용된다면
+   이 부분도 함께 검토해볼 수 있습니다. 하지만 현재 중앙 정렬 문제와는 거리가 있습니다.
+*/
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* color: #213547; */ /* Tailwind light 모드에서 제어 */
+    /* background-color: #ffffff; */ /* Tailwind light 모드에서 제어 */
   }
   a:hover {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+    /* background-color: #f9f9f9; */ /* Tailwind light 모드에서 제어 */
   }
 }
 
 /* index.css */
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-gray-50 text-gray-900; /* 이 스타일은 유지합니다 (Tailwind 기본 스타일) */
 }
 .dark body {
-  @apply bg-gray-900 text-gray-50;
+  @apply bg-gray-900 text-gray-50; /* 이 스타일은 유지합니다 (Tailwind 다크모드 스타일) */
 }

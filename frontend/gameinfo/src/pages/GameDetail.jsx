@@ -149,8 +149,8 @@ export default function GameDetail() {
               'bg-red-500'
             } text-white`}>{game.metacritic || 'N/A'}</span></p>
           <p><strong>User Rating:</strong> <span className={`px-2 py-1 rounded ${
-              game.rating >= 4 ? 'bg-green-500' :
-              game.rating >= 2 ? 'bg-yellow-500' :
+              game.rating >= 3.5 ? 'bg-green-500' :
+              game.rating >= 2.5 ? 'bg-yellow-500' :
               'bg-red-500'
             } text-white`}>{game.rating ? `${game.rating.toFixed(1)} / 5` : 'N/A'}</span></p>
           <p><strong>Genres:</strong> {game.genres.map(g => g.name).join(', ')}</p>
@@ -165,22 +165,101 @@ export default function GameDetail() {
       </div>
 
       {/* 스크린샷 갤러리 */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">Screenshots</h2>
-        <div className="flex space-x-4 overflow-x-auto py-2 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300">
-          {screenshots.map((ss, idx) => (
-            <img key={ss.id} src={ss.image} alt={`ss-${ss.id}`} className="flex-shrink-0 w-64 h-40 object-cover rounded-lg snap-center cursor-pointer" onClick={() => openScreenshot(idx)} />
-          ))}
-        </div>
-        <Modal isOpen={isScreenshotOpen} onRequestClose={closeScreenshot} className="modal" overlayClassName="overlay">
-          <button onClick={closeScreenshot} className="mb-4">Close</button>
-          <div className="flex items-center justify-between">
-            <button onClick={prevScreenshot}>❮</button>
-            <img src={screenshots[screenshotIndex]?.image} alt="ss" className="max-h-[80vh] object-contain" />
-            <button onClick={nextScreenshot}>❯</button>
+        <div className="mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold mb-4">Screenshots</h2>
+          {/* 스크린샷 썸네일 목록 */}
+          <div className="flex space-x-4 overflow-x-auto py-2 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-700">
+            {screenshots.map((ss, idx) => (
+              <img
+                key={ss.id}
+                src={ss.image}
+                alt={`Screenshot ${idx + 1} for ${game?.name || 'game'}`}
+                className="flex-shrink-0 w-64 h-40 object-cover rounded-lg snap-center cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => openScreenshot(idx)} // 클릭 시 openScreenshot 함수 호출
+              />
+            ))}
           </div>
-        </Modal>
-      </div>
+
+          {/* 스크린샷 확대 모달 */}
+          <Modal
+  isOpen={isScreenshotOpen}
+  onRequestClose={closeScreenshot}
+  style={{
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.85)', // 배경을 조금 더 어둡게
+      zIndex: 1000, // z-index를 충분히 높게
+      display: 'flex', // 오버레이 자체를 flex로 만들어 내부 컨텐츠 중앙 정렬 용이하게
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    content: {
+      position: 'relative', // 내부 absolute 버튼들의 기준점
+      background: 'transparent',
+      border: 'none',
+      padding: 0,
+      overflow: 'visible', // 버튼이 이미지 밖으로 나갈 수 있도록
+      // inset: '40px', // 뷰포트에서 상하좌우 여백 (선택사항, 아래 width/height와 함께 사용)
+      // width: 'auto', // 이미지 크기에 맞춰짐
+      // height: 'auto', // 이미지 크기에 맞춰짐
+      maxWidth: 'calc(100vw - 80px)', // 좌우 여백 40px씩 확보
+      maxHeight: 'calc(100vh - 80px)', // 상하 여백 40px씩 확보
+      display: 'flex', // 이미지 중앙 정렬을 위해
+      alignItems: 'center',
+      justifyContent: 'center',
+    }
+  }}
+  contentLabel="Screenshot Modal"
+  shouldCloseOnOverlayClick={true}
+>
+  {/* 이미지와 버튼들을 감싸는 컨테이너 (옵션, 구조화를 위해) */}
+  <div className="relative flex items-center justify-center">
+    {/* 실제 이미지 */}
+    {screenshots.length > 0 && screenshots[screenshotIndex] && (
+      <img
+        src={screenshots[screenshotIndex]?.image}
+        alt={`Enlarged screenshot ${screenshotIndex + 1}`}
+        className="block max-h-[calc(100vh-120px)] max-w-[calc(100vw-160px)] object-contain rounded-lg shadow-2xl"
+        // 버튼 공간을 고려하여 이미지 최대 크기를 약간 줄임 (120px, 160px는 예시)
+      />
+    )}
+  </div>
+
+  {/* 이전 버튼: 뷰포트 기준 좌측 중앙 (이미지 크기와 무관) */}
+  {screenshots.length > 1 && (
+    <button
+      onClick={prevScreenshot}
+      className="fixed left-4 top-1/2 -translate-y-1/2 p-3 bg-black bg-opacity-60 text-white rounded-full hover:bg-opacity-80 transition-all focus:outline-none"
+      aria-label="Previous screenshot"
+      style={{ zIndex: 1001 }} // 모달 컨텐츠보다 위에 오도록
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+  )}
+
+  {/* 다음 버튼: 뷰포트 기준 우측 중앙 (이미지 크기와 무관) */}
+  {screenshots.length > 1 && (
+    <button
+      onClick={nextScreenshot}
+      className="fixed right-4 top-1/2 -translate-y-1/2 p-3 bg-black bg-opacity-60 text-white rounded-full hover:bg-opacity-80 transition-all focus:outline-none"
+      aria-label="Next screenshot"
+      style={{ zIndex: 1001 }} // 모달 컨텐츠보다 위에 오도록
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  )}
+
+  {/* 닫기 버튼: 뷰포트 기준 우측 상단 (이미지 크기와 무관) */}
+  <button
+    onClick={closeScreenshot}
+    className="fixed top-5 right-5 p-2.5 bg-black bg-opacity-60 text-white rounded-full hover:bg-opacity-80 transition-all focus:outline-none"
+    aria-label="Close modal"
+    style={{ zIndex: 1001 }} // 모달 컨텐츠보다 위에 오도록
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+</Modal>
+        </div>
+      
 
       {/* 설명 */}
       <div>
