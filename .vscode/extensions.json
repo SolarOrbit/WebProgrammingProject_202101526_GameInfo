@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",           // ESLint
+    "esbenp.prettier-vscode",           // Prettier
+    "ms-azuretools.vscode-docker",      // Docker
+    "eamodio.gitlens",                  // GitLens
+    "ms-vscode-remote.remote-containers",// Dev Containers
+    "bradlc.vscode-tailwindcss",        // Tailwind CSS IntelliSense
+    "vscode-icons-team.vscode-icons"    // 아이콘 테마
+  ]
+}

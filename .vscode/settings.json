@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "files.exclude": {
+    "node_modules": true,
+    "dist": true
+  },
+  "terminal.integrated.shellArgs.linux": ["-l"],
+  "docker.showExplorer": true
+}
