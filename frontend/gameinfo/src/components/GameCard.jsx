@@ -5,10 +5,10 @@ import { Star } from 'lucide-react'
 import { isFavorite, toggleFavorite } from '../utils/favorites'
 
 export default function GameCard({ game }) {
-  const [fav, setFav] = useState(false)
   const location = useLocation()
+  const [fav, setFav] = useState(false)
 
-  // 초기 즐겨찾기 상태 로드
+  // 초기 즐겨찾기 상태
   useEffect(() => {
     let mounted = true
     isFavorite(game.id).then(flag => {
@@ -19,7 +19,7 @@ export default function GameCard({ game }) {
 
   // 즐겨찾기 토글 핸들러
   const onToggle = async e => {
-    e.preventDefault()  // 링크 이동 방지
+    e.preventDefault()
     try {
       await toggleFavorite(game.id)
       setFav(prev => !prev)
@@ -29,24 +29,22 @@ export default function GameCard({ game }) {
   }
 
   return (
-    <div className="relative w-full max-w-xs">
+    <div className="relative w-full max-w-xs bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
       {/* 즐겨찾기 버튼 */}
       <button
         onClick={onToggle}
-        className="absolute top-2 right-2 p-1 bg-white rounded-full shadow focus:outline-none"
+        className="absolute top-2 right-2 p-1 bg-white dark:bg-gray-800 rounded-full shadow focus:outline-none"
         aria-label="Toggle Favorite"
       >
         <Star size={20} className={fav ? 'text-yellow-400' : 'text-gray-400'} />
       </button>
 
-      {/* 카드 전체를 링크로 감싸기 */}
+      {/* 카드 전체 링크 */}
       <Link
-        to={{
-          pathname: `/game/${game.id}`,
-          search: location.search   // ← 기존 ?q=… 를 그대로 넘겨줍니다
-        }}
-        className="flex flex-col …"
+        to={{ pathname: `/game/${game.id}`, search: location.search }}
+        className="block transform transition hover:scale-105"
       >
+        {/* 이미지 영역 */}
         <div className="relative w-full pb-[75%]">
           <img
             src={game.background_image || '/placeholder.png'}
@@ -54,6 +52,7 @@ export default function GameCard({ game }) {
             className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
+        {/* 텍스트 영역 */}
         <div className="p-4 space-y-1">
           <h2 className="text-lg font-semibold truncate text-gray-900 dark:text-white">
             {game.name}

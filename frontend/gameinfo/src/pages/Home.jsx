@@ -1,12 +1,12 @@
 // src/pages/Home.jsx
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+
 import Header from '../components/Header'
 import FilterSort from '../components/FilterSort'
 import GameCard from '../components/GameCard'
 import SkeletonCard from '../components/SkeletonCard'
 import { searchGames, getGameDetail } from '../api/game'
-import PageLayout from '../components/PageLayout'
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -19,18 +19,18 @@ export default function Home() {
   const [ordering, setOrdering] = useState('')
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
-  const loadMoreRef = useRef(null)
 
-  const handleSearch = async q => {
+  // 페이지 단위 데이터 로드
+  const fetchPage = async (q, pageNum = 1) => {
     setLoading(true)
     setError(null)
-    setSearchParams({ q })
     try {
-      const basic = await searchGames(q, genre, ordering, 1)
+      const basic = await searchGames(q, genre, ordering, pageNum)
       const detailed = await Promise.all(basic.map(g => getGameDetail(g.id)))
       setGames(detailed)
       setHasMore(basic.length === 20)
-      setPage(2)
+      setPage(pageNum)
+      setSearchParams({ q })
     } catch (e) {
       console.error(e)
       setError('검색 중 오류가 발생했습니다.')
@@ -39,73 +39,64 @@ export default function Home() {
     }
   }
 
+  // 초기 및 필터/정렬 변경 시 첫 페이지 로드
   useEffect(() => {
-    if (query) handleSearch(query)
-  }, [query])
+    if (query) fetchPage(query, 1)
+  }, [query, genre, ordering])
 
-  useEffect(() => {
-    if (!loadMoreRef.current) return
-    const obs = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && hasMore && !loading) loadMore()
-      },
-      { rootMargin: '200px' }
-    )
-    obs.observe(loadMoreRef.current)
-    return () => obs.disconnect()
-  }, [hasMore, loading])
-
-  const loadMore = async () => {
-    if (!hasMore) return
-    setLoading(true)
-    try {
-      const basic = await searchGames(query, genre, ordering, page)
-      const detailed = await Promise.all(basic.map(g => getGameDetail(g.id)))
-      setGames(prev => [...prev, ...detailed])
-      setHasMore(basic.length === 20)
-      setPage(prev => prev + 1)
-    } catch (e) {
-      console.error(e)
-      setError('추가 로드 중 오류가 발생했습니다.')
-    } finally {
-      setLoading(false)
-    }
+  // 검색창에서 입력된 값으로 URL 업데이트
+  const handleSearch = q => {
+    setSearchParams({ q })
   }
+
+  const handlePrev = () => page > 1 && fetchPage(query, page - 1)
+  const handleNext = () => hasMore && fetchPage(query, page + 1)
 
   return (
     <>
-    <PageLayout>
-      {/* 헤더 (검색창 포함) */}
+      {/* 헤더 */}
       <Header onSearch={handleSearch} />
 
+      {/* 필터 */}
       <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* 필터 */}
         <FilterSort
           genre={genre}
           ordering={ordering}
-          onGenreChange={setGenre}
-          onOrderChange={setOrdering}
+          onGenreChange={g => setGenre(g)}
+          onOrderChange={o => setOrdering(o)}
         />
 
-        {error && <p className="text-center text-red-500">{error}</p>}
-
-        {/* 검색 결과 또는 스켈레톤 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+        {/* 카드 그리드 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {loading
             ? Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)
-            : games.map(game => <GameCard key={game.id} game={game} />)}
+            : games.map(game => <GameCard key={game.id} game={game} />)
+          }
         </div>
 
-        {/* 결과 없음 안내 */}
+        {/* 결과 없을 때 */}
         {!loading && games.length === 0 && (
-          <p className="text-center text-gray-500 mt-4">검색 결과가 없습니다.</p>
+          <p className="text-center text-gray-500 mt-8">검색 결과가 없습니다.</p>
         )}
 
-        {/* 로딩 중 메시지 및 로드 더미 */}
-        {loading && <p className="text-center mt-4">불러오는 중…</p>}
-        <div ref={loadMoreRef} className="h-1"></div>
+        {/* 페이지네이션 */}
+        <div className="flex justify-center items-center space-x-4 mt-8">
+          <button
+            onClick={handlePrev}
+            disabled={page === 1 || loading}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50"
+          >이전</button>
+          <span className="text-gray-700 dark:text-gray-300">{page} 페이지</span>
+          <button
+            onClick={handleNext}
+            disabled={!hasMore || loading}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50"
+          >다음</button>
+        </div>
+
+        {/* 에러 */}
+        {error && <p className="text-center text-red-500 mt-4">{error}</p>}
       </div>
-    </PageLayout>
     </>
   )
 }
