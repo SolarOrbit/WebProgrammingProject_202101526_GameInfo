@@ -291,7 +291,7 @@ export default function GameDetail() {
               </div>
             ) : (
               <p className="text-gray-500 dark:text-gray-400 py-3 text-center">
-                Store links are currently unavailable for this game.
+                현재 이용 가능한 상점이 없습니다. 😢
               </p>
             )}
           </div>

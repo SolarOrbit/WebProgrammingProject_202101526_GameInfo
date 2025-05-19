@@ -1,17 +1,18 @@
 // src/pages/Favorites.jsx
 import React, { useState, useEffect, useContext } from 'react'; // useContext 추가
-import { Link } from 'react-router-dom'; // Link 추가
+import { Link, useNavigate } from 'react-router-dom'; // Link 추가
 import { getFavorites } from '../utils/favorites';
 import { getGameDetail } from '../api/game';
 import GameCard from '../components/GameCard';
 import PageLayout from '../components/PageLayout'; // PageLayout 임포트
 import { AuthContext } from '../contexts/AuthContext'; // AuthContext 임포트
-import { Heart, Search, Star } from 'lucide-react'; // 아이콘 임포트
+import { Heart, Search, Star, ArrowLeft } from 'lucide-react'; // 아이콘 임포트
 
 export default function Favorites() {
   const { user } = useContext(AuthContext); // 사용자 정보 가져오기
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 사용자가 로그인한 경우에만 즐겨찾기를 가져옵니다.
@@ -73,7 +74,7 @@ export default function Favorites() {
       <PageLayout>
         <div className="text-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">Loading your favorites...</p>
+          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">즐겨찾기 불러오는 중...</p>
         </div>
       </PageLayout>
     );
@@ -83,7 +84,15 @@ export default function Favorites() {
     <PageLayout>
       <div className="max-w-screen-xl mx-auto px-4 py-8"> {/* PageLayout 내부에서 최대 너비 조정 */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeft size={28} />
+          </button>
           <div className="flex items-center mb-4 sm:mb-0">
+            
             <Heart size={36} className="mr-3 text-red-500" />
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">내 즐겨찾기 게임</h1>
           </div>
