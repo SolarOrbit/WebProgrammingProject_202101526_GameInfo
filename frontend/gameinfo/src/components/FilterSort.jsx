@@ -6,7 +6,7 @@ const genres = [
   { label: '전체', value: '' },
   { label: '액션', value: 'action' },
   { label: '어드벤처', value: 'adventure' },
-  { label: '롤플레잉잉', value: 'role-playing-games-rpg' },
+  { label: '롤플레잉', value: 'role-playing-games-rpg' },
   { label: '슈팅', value: 'shooter' },
   { label: '퍼즐', value: 'puzzle' },
   { label: '전략', value: 'strategy' },

@@ -1,41 +1,57 @@
 // src/pages/SignUp.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Link 컴포넌트 임포트
+import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import PageLayout from '../components/PageLayout'; // PageLayout 임포트
-import { UserPlus } from 'lucide-react'; // 아이콘 임포트 (예시)
+import PageLayout from '../components/PageLayout';
+import { UserPlus, CheckCircle } from 'lucide-react'; // CheckCircle 아이콘 추가
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
-  const [error, setError] = useState(''); // 에러 메시지 상태 추가
+  const [error, setError] = useState('');
+  // const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가 (선택 사항)
   const navigate = useNavigate();
 
   const onSubmit = async e => {
     e.preventDefault();
-    setError(''); // 이전 에러 초기화
-    if (pw.length < 6) { // 간단한 비밀번호 길이 유효성 검사
-        setError('Password should be at least 6 characters long.');
-        return;
+    setError('');
+    // setIsLoading(true); // 로딩 시작
+
+    if (pw.length < 6) {
+      setError('비밀번호는 6자 이상이어야 합니다.');
+      // setIsLoading(false); // 로딩 끝
+      return;
     }
+
     try {
       await createUserWithEmailAndPassword(auth, email, pw);
-      await signOut(auth); // 회원가입 후 자동 로그아웃
-      alert('Sign up successful! Please login.'); // 성공 메시지
-      navigate('/login');
+      await signOut(auth); // 회원가입 후 자동 로그아웃 (보안상 권장)
+
+      // alert 대신 navigate의 state를 사용하여 성공 메시지 전달
+      navigate('/login', {
+        state: {
+          successMessage: '성공적으로 회원가입 되었습니다. 로그인해주세요!',
+          fromSignUp: true // 로그인 페이지에서 특정 UI를 보여주기 위한 플래그 (선택 사항)
+        }
+      });
     } catch (err) {
-      console.error("Sign up error:", err);
-      if (err.code === 'auth/email-already-in-use') {
-        setError('This email address is already in use.');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Please enter a valid email address.');
-      } else if (err.code === 'auth/weak-password') {
-        setError('Password is too weak. Please choose a stronger password.');
+      console.error("회원가입 오류:", err.code, err.message);
+      let friendlyMessage = '회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          friendlyMessage = '이미 사용 중인 이메일 주소입니다.';
+          break;
+        case 'auth/invalid-email':
+          friendlyMessage = '유효하지 않은 이메일 주소 형식입니다.';
+          break;
+        case 'auth/weak-password':
+          friendlyMessage = '비밀번호가 너무 약합니다. 더 강력한 비밀번호를 사용해주세요.';
+          break;
       }
-       else {
-        setError('Failed to sign up. Please try again later.');
-      }
+      setError(friendlyMessage);
+    } finally {
+      // setIsLoading(false); // 로딩 끝
     }
   };
 
@@ -45,17 +61,18 @@ export default function SignUp() {
         <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl rounded-xl p-8 md:p-10 space-y-6">
           <div className="text-center">
             <UserPlus size={48} className="mx-auto text-green-600 dark:text-green-500 mb-4" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">계정을 생성하세요</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">회원가입</h1>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              커뮤니티에 가입하여 게임을 발견하고 리뷰해 보세요!
+              GameInfo 커뮤니티에 오신 것을 환영합니다!
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative" role="alert">
-              <span className="block sm:inline">{error}</span>
+            <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm" role="alert">
+              {error}
             </div>
           )}
+          {/* 성공 메시지는 로그인 페이지에서 표시합니다. */}
 
           <form onSubmit={onSubmit} className="space-y-6">
             <div>
@@ -75,7 +92,7 @@ export default function SignUp() {
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                비밀번호 (최소 6자 이상)
+                비밀번호 (6자 이상)
               </label>
               <input
                 id="password"
@@ -88,18 +105,19 @@ export default function SignUp() {
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors"
               />
             </div>
-            {/* TODO: 비밀번호 확인 필드 추가 권장 */}
             <button
               type="submit"
+              // disabled={isLoading} // 로딩 상태 사용 시
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800 transition-all duration-150 ease-in-out"
             >
-              계정 생성
+              {/* {isLoading ? '가입 중...' : '계정 만들기'} */}
+              계정 만들기
             </button>
           </form>
           <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
             이미 계정이 있으신가요?{' '}
             <Link to="/login" className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 hover:underline">
-              여기서 로그인하세요.
+              로그인하기
             </Link>
           </p>
         </div>
