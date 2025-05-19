@@ -96,15 +96,8 @@ export default function Header({ onSearch }) {
           {/* 사용자 정보 및 인증 */}
           {user ? (
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <Link to="/profile" aria-label="마이페이지" title={user.email || "마이페이지"} className="flex items-center text-sm text-neutral-700 dark:text-neutral-300 hover:text-brand-primary dark:hover:text-brand-primary-light">
-                 {/* user.photoURL이 있다면 이미지 표시, 없다면 아이콘 표시 */}
-                {user.photoURL ? (
-                    <img src={user.photoURL} alt="프로필" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full mr-2 border-2 border-transparent hover:border-brand-primary"/>
-                ) : (
-                    <UserCircle size={22} className="mr-1 sm:mr-2" />
-                )}
-                <span className="hidden md:inline">{user.email?.split('@')[0]} 님</span> {/* 이메일 아이디만 표시 */}
-              </Link>
+              <span className="hidden md:inline">환영합니다, {user.email?.split('@')[0]} 님</span> {/* 이메일 아이디만 표시 */}
+              
               {/* <Button variant="danger" size="sm" onClick={handleLogout}>로그아웃</Button> */}
               <button
                 onClick={handleLogout}
