@@ -87,10 +87,10 @@ export default function GameCard({ game }) {
               {game.name}
             </h2>
             <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-              {game.developers?.[0]?.name || 'Unknown Developer'}
+              {game.developers?.[0]?.name || '미상의 개발사'}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Released: {game.released || 'N/A'}
+              출시: {game.released || 'N/A'}
             </p>
           </div>
 

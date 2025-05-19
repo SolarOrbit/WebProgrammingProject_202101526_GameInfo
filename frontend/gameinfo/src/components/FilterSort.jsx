@@ -3,23 +3,23 @@ import React from 'react'
 
 // 확장된 장르 목록 예시
 const genres = [
-  { label: 'All', value: '' },
-  { label: 'Action', value: 'action' },
-  { label: 'Adventure', value: 'adventure' },
-  { label: 'RPG', value: 'role-playing-games-rpg' },
-  { label: 'Shooter', value: 'shooter' },
-  { label: 'Puzzle', value: 'puzzle' },
-  { label: 'Strategy', value: 'strategy' },
-  { label: 'Simulation', value: 'simulation' },
-  { label: 'Sports', value: 'sports' },
-  { label: 'Racing', value: 'racing' }
+  { label: '전체', value: '' },
+  { label: '액션', value: 'action' },
+  { label: '어드벤처', value: 'adventure' },
+  { label: '롤플레잉잉', value: 'role-playing-games-rpg' },
+  { label: '슈팅', value: 'shooter' },
+  { label: '퍼즐', value: 'puzzle' },
+  { label: '전략', value: 'strategy' },
+  { label: '시뮬레이션', value: 'simulation' },
+  { label: '스포츠', value: 'sports' },
+  { label: '레이싱', value: 'racing' }
 ]
 
 const orderingOptions = [
-  { label: 'Rating (High to Low)', value: '-rating' },
-  { label: 'Rating (Low to High)', value: 'rating' },
-  { label: 'Newest', value: '-released' },
-  { label: 'Oldest', value: 'released' }
+  { label: '평점 (높은 순)', value: '-rating' },
+  { label: '평점 (낮은 순)', value: 'rating' },
+  { label: '최신', value: '-released' },
+  { label: '오래된 순', value: 'released' }
 ]
 
 export default function FilterSort({ genre, ordering, onGenreChange, onOrderChange }) {

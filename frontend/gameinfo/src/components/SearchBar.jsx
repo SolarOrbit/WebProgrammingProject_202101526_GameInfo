@@ -11,7 +11,7 @@ export default function SearchBar({ onSearch }) {
     <form onSubmit={handleSubmit} className="search-bar">
       <input
        type="text"
-      placeholder="Search..."
+      placeholder="검색어를 입력해 보세요..."
        className="
         flex-1
         border
@@ -42,7 +42,7 @@ export default function SearchBar({ onSearch }) {
        dark:hover:bg-blue-600
      "
    >
-     Search
+     검색
    </button>
     </form>
   )
